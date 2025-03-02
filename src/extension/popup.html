@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocBits</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 320px;
+      padding: 16px;
+      margin: 0;
+    }
+    
+    h1 {
+      font-size: 18px;
+      margin: 0 0 16px 0;
+      color: #1a202c;
+      display: flex;
+      align-items: center;
+    }
+    
+    h1 img {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+    
+    .divider {
+      height: 1px;
+      background-color: #e2e8f0;
+      margin: 16px 0;
+    }
+    
+    button {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      background-color: #4299e1;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    button:hover {
+      background-color: #3182ce;
+    }
+    
+    button:disabled {
+      background-color: #a0aec0;
+      cursor: not-allowed;
+    }
+    
+    button svg {
+      margin-right: 8px;
+    }
+    
+    .stats {
+      background-color: #f7fafc;
+      border-radius: 4px;
+      padding: 12px;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    
+    .stats-value {
+      font-weight: 600;
+    }
+    
+    .savings {
+      color: #38a169;
+      font-weight: 700;
+    }
+    
+    .options {
+      margin-top: 16px;
+    }
+    
+    .option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .option input {
+      margin-right: 8px;
+    }
+    
+    .footer {
+      font-size: 12px;
+      color: #718096;
+      text-align: center;
+      margin-top: 16px;
+    }
+    
+    .message {
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    
+    .message.success {
+      background-color: #c6f6d5;
+      color: #2f855a;
+    }
+    
+    .message.error {
+      background-color: #fed7d7;
+      color: #c53030;
+    }
+  </style>
+</head>
+<body>
+  <h1><img src="icons/icon48.png" alt="DocBits"> DocBits</h1>
+  
+  <div id="message" class="message" style="display: none;"></div>
+  
+  <button id="compress-page">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+      <path d="M12 4v16"></path>
+    </svg>
+    Compress Full Page
+  </button>
+  
+  <button id="compress-selection">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+      <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+    </svg>
+    Compress Selection
+  </button>
+  
+  <div id="stats" class="stats" style="display: none;">
+    <div class="stats-row">
+      <span>Original tokens:</span>
+      <span class="stats-value" id="original-tokens">0</span>
+    </div>
+    <div class="stats-row">
+      <span>Compressed tokens:</span>
+      <span class="stats-value" id="compressed-tokens">0</span>
+    </div>
+    <div class="stats-row">
+      <span>Tokens saved:</span>
+      <span class="stats-value" id="tokens-saved">0</span>
+    </div>
+    <div class="stats-row">
+      <span>Savings:</span>
+      <span class="stats-value savings" id="percent-saved">0%</span>
+    </div>
+  </div>
+  
+  <button id="copy-compressed" disabled>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+    Copy Compressed Text
+  </button>
+  
+  <div class="divider"></div>
+  
+  <div class="options">
+    <div class="option">
+      <input type="checkbox" id="abbreviate-terms" checked>
+      <label for="abbreviate-terms">Abbreviate common terms</label>
+    </div>
+    <div class="option">
+      <input type="checkbox" id="compress-code" checked>
+      <label for="compress-code">Compress code examples</label>
+    </div>
+    <div class="option">
+      <input type="checkbox" id="remove-redundant" checked>
+      <label for="remove-redundant">Remove redundant docs</label>
+    </div>
+  </div>
+  
+  <div class="footer">
+    DocBits v0.1.0 | Compress docs for token efficiency
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
